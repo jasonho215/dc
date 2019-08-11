@@ -9,7 +9,9 @@ flake8 = "*"
 pytest = "*"
 
 [packages]
-elasticsearch = ">=7.0.0,<8.0.0"
+starlette = "==0.12.7"
+uvicorn = "==0.8.6"
+httpx = "==0.6.8"
 
 [requires]
 python_version = "3.7"
