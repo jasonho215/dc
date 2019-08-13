@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "aa9af28dbd798e4828742642bd457742296b35984199cf8fabd32e48e620f148"
+            "sha256": "6e8db23a1d609edbe0223fd7bb44712a2ddc3490e4467df3ca6235188ab8a747"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -92,13 +92,6 @@
                 "sha256:df4eba676077cefb86450c8f60121b9ae04b94f65f85b69f3f731af0516b7b18"
             ],
             "version": "==1.3.2"
-        },
-        "starlette": {
-            "hashes": [
-                "sha256:849553e6dc8dd4faac5d4383219bdf49b199f3f09d60ce374c2a00a42ab7c77d"
-            ],
-            "index": "pypi",
-            "version": "==0.12.7"
         },
         "uvicorn": {
             "hashes": [
