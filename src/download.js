@@ -14,8 +14,6 @@ module.exports = async function download(items) {
     const minutesPath = "data/" + new URL(minutes).pathname;
     const minutesDir = path.dirname(minutesPath);
 
-    const minutesBuffer = await (await fetch(minutes)).buffer();
-
     await doIfNeed(async () => {
       fs.mkdirSync(agendaDir, { recursive: true });
       return (await fetch(agenda)).buffer();
