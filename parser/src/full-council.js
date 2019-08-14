@@ -67,7 +67,7 @@ async function parseTable(table) {
 module.exports = async function read() {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  const result = [];
+  let result = [];
   for (const district of DISTRICTS) {
     await page.goto(
       `https://www.districtcouncils.gov.hk/${district}/tc_chi/meetings/dcmeetings/dc_meetings.php`
@@ -80,7 +80,7 @@ module.exports = async function read() {
       for (const a of r) {
         a.year = year;
       }
-      result.push(r);
+      result = result.concat(r);
     }
   }
   await browser.close();

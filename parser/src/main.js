@@ -1,18 +1,13 @@
 const fs = require("fs");
+const { doIfNeed } = require("./utils");
 const read = require("./full-council.js");
-
-async function doIfNeed(f, path) {
-  try {
-    fs.lstatSync(path);
-  } catch (e) {
-    const r = await f();
-    fs.writeFileSync(path, r);
-  }
-}
+const download = require("./downloadPDF");
 
 async function main() {
   fs.mkdirSync("data", {recursive: true});
-  doIfNeed(read, "data/full-council.json");
+  await doIfNeed(read, "data/full-council.json");
+  const items = JSON.parse(fs.readFileSync("data/full-council.json", { "encoding": "utf8" }));
+  await download(items);
 }
 
 main();

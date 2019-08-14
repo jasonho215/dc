@@ -1,3 +1,4 @@
+const fs = require("fs");
 const { URL } = require("url");
 
 const TIME_REGEX = /(上|下)午(\d+)時(\d+分|正)/u;
@@ -30,4 +31,13 @@ function parseDate(dateStr, timeStr) {
   return `${date}T${pad(hour)}:${pad(minutes)}:00.000+08:00`;
 }
 
-module.exports = { parseLink, parseDate };
+async function doIfNeed(f, path) {
+  try {
+    fs.lstatSync(path);
+  } catch (e) {
+    const r = await f();
+    fs.writeFileSync(path, r);
+  }
+}
+
+module.exports = { parseLink, parseDate, doIfNeed };
