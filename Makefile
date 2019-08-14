@@ -14,9 +14,9 @@ build-es:
 run-es: build-es
 	docker run -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" elasticsearch-icu
 
-.PHONY: play
-play:
-	python -m dc.play
+.PHONY: reindex
+reindex:
+	python -m dc.cmd.reindex
 
 .PHONY: serve
 serve:
