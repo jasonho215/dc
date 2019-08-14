@@ -1,10 +1,10 @@
 {
   "name": "district-council-doc-parser",
   "version": "1.0.0",
-  "main": "src/index.js",
   "author": "Jason Ho <jasonho@oursky.com>",
-  "license": "MIT",
-  "private": false,
+  "scripts": {
+    "generate": "node src/main.js"
+  },
   "dependencies": {
     "node-fetch": "2.6.0",
     "puppeteer": "1.19.0"
