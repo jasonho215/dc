@@ -56,6 +56,8 @@ async function parseTable(table) {
       meeting_type: "full_council",
       meeting_date: parseDate(d[1], d[2]),
       meeting_number: d[0],
+      // FIXME: get the location from audio html page.
+      meeting_location: "",
       agenda: parseLink(d[3]),
       minutes: parseLink(d[4]),
     });

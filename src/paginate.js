@@ -25,6 +25,7 @@ async function process(item, documentType) {
       meeting_type: item.meeting_type,
       meeting_number: item.meeting_number,
       meeting_date: item.meeting_date,
+      meeting_location: item.meeting_location,
       content_type: "application/pdf",
       url: url,
       document_type: documentType,
