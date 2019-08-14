@@ -75,7 +75,7 @@ module.exports = async function read() {
     const tables = Array.from(await page.$$("div#mainContent div[id^=table]"));
     for (const table of tables) {
       const id = String(await (await table.getProperty("id")).jsonValue());
-      const year = id.slice(5);
+      const year = parseInt(id.slice(5), 10);
       const r = await parseTable(table);
       for (const a of r) {
         a.year = year;
