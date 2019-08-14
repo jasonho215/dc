@@ -1,7 +1,7 @@
 const fs = require("fs");
 const { doIfNeed } = require("./utils");
 const read = require("./fullCouncil.js");
-const download = require("./downloadPDF");
+const download = require("./download");
 
 async function main() {
   fs.mkdirSync("data", { recursive: true });
