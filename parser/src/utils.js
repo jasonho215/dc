@@ -17,7 +17,6 @@ function parseLink(val) {
 function parseDate(dateStr, timeStr) {
   const date = dateStr.slice(0, 10);
   const matches = TIME_REGEX.exec(timeStr);
-  console.log(timeStr);
   let hour = parseInt(matches[2], 10);
   let minutes = "";
   if (matches[1] === "下") {

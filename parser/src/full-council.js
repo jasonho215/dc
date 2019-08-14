@@ -64,15 +64,15 @@ async function parseTable(table) {
   return meetingList.filter(a => !!a.agenda && !!a.minutes);
 }
 
-async function main() {
+module.exports = async function read() {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
+  const result = [];
   for (const district of DISTRICTS) {
     await page.goto(
       `https://www.districtcouncils.gov.hk/${district}/tc_chi/meetings/dcmeetings/dc_meetings.php`
     );
     const tables = Array.from(await page.$$("div#mainContent div[id^=table]"));
-    const result = [];
     for (const table of tables) {
       const id = String(await (await table.getProperty("id")).jsonValue());
       const year = id.slice(5);
@@ -82,9 +82,7 @@ async function main() {
       }
       result.push(r);
     }
-    console.log(result);
   }
   await browser.close();
+  return JSON.stringify(result, null, 2);
 }
-
-main();
