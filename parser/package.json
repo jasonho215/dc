@@ -7,6 +7,6 @@
   "private": false,
   "dependencies": {
     "node-fetch": "2.6.0",
-    "puppeteer": "^1.19.0"
+    "puppeteer": "1.19.0"
   }
 }
