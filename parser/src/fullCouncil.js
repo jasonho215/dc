@@ -53,11 +53,11 @@ async function parseTable(table) {
       }
     }
     meetingList.push({
-      name: d[0],
-      date: parseDate(d[1], d[2]),
+      meeting_type: "full_council",
+      meeting_date: parseDate(d[1], d[2]),
+      meeting_number: d[0],
       agenda: parseLink(d[3]),
       minutes: parseLink(d[4]),
-      // audio: parseLink(d[5]),
     });
     i += circulates.length + 1;
   }
@@ -79,6 +79,7 @@ module.exports = async function read() {
       const r = await parseTable(table);
       for (const a of r) {
         a.year = year;
+        a.district = district;
       }
       result = result.concat(r);
     }
