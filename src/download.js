@@ -7,6 +7,9 @@ const { doIfNeed } = require("./utils");
 module.exports = async function download(items) {
   for (const item of items) {
     const { agenda, minutes } = item;
+    if (!agenda || !minutes) {
+      continue;
+    }
 
     const agendaPath = "data/" + new URL(agenda).pathname;
     const agendaDir = path.dirname(agendaPath);

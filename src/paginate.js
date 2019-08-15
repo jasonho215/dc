@@ -39,8 +39,12 @@ async function process(item, documentType) {
 module.exports = async function paginate(items) {
   let output = [];
   for (const item of items) {
-    output = output.concat(await process(item, "agenda"));
-    output = output.concat(await process(item, "minutes"));
+    if (!item.agenda || !item.minutes) {
+      output.push(item);
+    } else {
+      output = output.concat(await process(item, "agenda"));
+      output = output.concat(await process(item, "minutes"));
+    }
   }
   return JSON.stringify(output, null, 2);
 }

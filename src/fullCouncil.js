@@ -1,5 +1,7 @@
 const puppeteer = require("puppeteer");
 const { parseLink, parseDate } = require("./utils");
+const parseDuration = require("./parseDuration");
+const fixAgendaCode = require("./fixAgendaCode");
 
 const MEETING_COL_CNT = 7;
 const CIRCULATE_COL_CNT = 2;
@@ -25,15 +27,55 @@ const DISTRICTS = [
   "tm",
 ];
 
-async function parseAudio(browser, audioURL) {
+async function parseAudio(browser, audioURL, attrs) {
   const page = await browser.newPage();
   await page.goto(audioURL);
   const meeting_location = await page.$eval("table.meeting tr:nth-child(3) td:nth-child(2)", td => td.textContent.trim());
+
+  let rows = await page.$$eval("table.meeting", nodes => {
+    const output = [];
+    const table = nodes[1];
+    const rows = Array.from(table.querySelectorAll("tr")).slice(1);
+    for (const row of rows) {
+      const cols = Array.from(row.querySelectorAll("td"));
+
+      const anchor = cols[1].querySelector("a");
+      // The first childNode is <span class="access">這連結會以新視窗打開。</span>
+      // We want to skip it.
+      const title = anchor != null ? anchor.childNodes[1].textContent.trim() : null;
+      const url = anchor != null ? anchor.href : null;
+      const agenda_code = cols[0].textContent.trim();
+      const durationText = cols[2].textContent.trim();
+
+      output.push({
+        agenda_code,
+        title,
+        url,
+        durationText,
+      });
+    }
+    return output;
+  });
+
+  rows = fixAgendaCode(rows);
+  rows = rows.filter(row => !!row.title && !!row.url && !!row.durationText);
+  rows = rows.map(row => {
+    return {
+      ...attrs,
+      meeting_location,
+      agenda_code: row.agenda_code,
+      agenda_title: row.title,
+      url: row.url,
+      duration: parseDuration(row.durationText),
+      content_type: "audio/mp3",
+    };
+  });
+
   await page.close();
-  return { meeting_location };
+  return { meeting_location, rows };
 }
 
-async function parseTable(browser, table) {
+async function parseTable(browser, table, attrs) {
   const rows = await table.$$eval("tr", trs => {
     return trs.map(tr =>
       Array.from(tr.querySelectorAll("td")).map(td => {
@@ -49,30 +91,40 @@ async function parseTable(browser, table) {
   // remove table header
   const dataRows = rows.slice(1, rows.length);
 
-  const meetingList = [];
+  let meetingList = [];
   for (const d of dataRows) {
     if (d.length !== MEETING_COL_CNT) {
       continue;
     }
+
+    let agenda;
+    let minutes;
+    let audio;
     try {
-      const agenda = parseLink(d[3]);
-      const minutes = parseLink(d[4]);
-      const audio = parseLink(d[5]);
-
-      const { meeting_location } = await parseAudio(browser, audio);
-
-      meetingList.push({
-        agenda,
-        minutes,
-        audio,
-        meeting_type: "full_council",
-        meeting_date: parseDate(d[1], d[2]),
-        meeting_number: d[0],
-        meeting_location,
-      });
+      agenda = parseLink(d[3]);
+      minutes = parseLink(d[4]);
+      audio = parseLink(d[5]);
     } catch (e) {
       continue;
     }
+
+    const meeting_number = d[0];
+    const meeting_date = parseDate(d[1], d[2]);
+    const meeting_type = "full_council";
+
+    const { meeting_location, rows } = await parseAudio(browser, audio, { ...attrs,  meeting_number, meeting_date, meeting_type });
+
+    meetingList = meetingList.concat(rows);
+
+    meetingList.push({
+      ...attrs,
+      agenda,
+      minutes,
+      meeting_type,
+      meeting_date,
+      meeting_number,
+      meeting_location,
+    });
   }
 
   return meetingList;
@@ -90,11 +142,7 @@ module.exports = async function read() {
     for (const table of tables) {
       const id = String(await (await table.getProperty("id")).jsonValue());
       const year = parseInt(id.slice(5), 10);
-      const r = await parseTable(browser, table);
-      for (const a of r) {
-        a.year = year;
-        a.district = district;
-      }
+      const r = await parseTable(browser, table, { year, district });
       result = result.concat(r);
     }
   }
