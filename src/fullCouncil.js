@@ -25,7 +25,15 @@ const DISTRICTS = [
   "tm",
 ];
 
-async function parseTable(table) {
+async function parseAudio(browser, audioURL) {
+  const page = await browser.newPage();
+  await page.goto(audioURL);
+  const meeting_location = await page.$eval("table.meeting tr:nth-child(3) td:nth-child(2)", td => td.textContent.trim());
+  await page.close();
+  return { meeting_location };
+}
+
+async function parseTable(browser, table) {
   const rows = await table.$$eval("tr", trs => {
     return trs.map(tr =>
       Array.from(tr.querySelectorAll("td")).map(td => {
@@ -51,6 +59,8 @@ async function parseTable(table) {
       const minutes = parseLink(d[4]);
       const audio = parseLink(d[5]);
 
+      const { meeting_location } = await parseAudio(browser, audio);
+
       meetingList.push({
         agenda,
         minutes,
@@ -58,8 +68,7 @@ async function parseTable(table) {
         meeting_type: "full_council",
         meeting_date: parseDate(d[1], d[2]),
         meeting_number: d[0],
-        // FIXME: get the location from audio html page.
-        meeting_location: "",
+        meeting_location,
       });
     } catch (e) {
       continue;
@@ -81,7 +90,7 @@ module.exports = async function read() {
     for (const table of tables) {
       const id = String(await (await table.getProperty("id")).jsonValue());
       const year = parseInt(id.slice(5), 10);
-      const r = await parseTable(table);
+      const r = await parseTable(browser, table);
       for (const a of r) {
         a.year = year;
         a.district = district;
