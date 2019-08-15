@@ -68,6 +68,7 @@ async function parseAudio(browser, audioURL, attrs) {
       url: row.url,
       duration: parseDuration(row.durationText),
       content_type: "audio/mp3",
+      document_type: "audio",
     };
   });
 
