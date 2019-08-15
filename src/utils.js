@@ -8,11 +8,7 @@ function pad(s) {
 }
 
 function parseLink(val) {
-  try {
-    return new URL(val).toString();
-  } catch {
-    return undefined;
-  }
+  return new URL(val).toString();
 }
 
 function parseDate(dateStr, timeStr) {

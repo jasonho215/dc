@@ -37,33 +37,36 @@ async function parseTable(table) {
       })
     );
   });
+
   // remove table header
-  const dataRows = Array.from(rows).slice(1, rows.length);
+  const dataRows = rows.slice(1, rows.length);
+
   const meetingList = [];
-  for (let i = 0; i < dataRows.length; ) {
-    const d = Array.from(dataRows[i]);
-    const circulates = [];
-    for (let j = i + 1; j < dataRows.length; j++) {
-      const c = Array.from(dataRows[j]);
-      if (c.length === MEETING_COL_CNT) {
-        break;
-      }
-      if (c.length === CIRCULATE_COL_CNT) {
-        circulates.push(parseLink(c[1]));
-      }
+  for (const d of dataRows) {
+    if (d.length !== MEETING_COL_CNT) {
+      continue;
     }
-    meetingList.push({
-      meeting_type: "full_council",
-      meeting_date: parseDate(d[1], d[2]),
-      meeting_number: d[0],
-      // FIXME: get the location from audio html page.
-      meeting_location: "",
-      agenda: parseLink(d[3]),
-      minutes: parseLink(d[4]),
-    });
-    i += circulates.length + 1;
+    try {
+      const agenda = parseLink(d[3]);
+      const minutes = parseLink(d[4]);
+      const audio = parseLink(d[5]);
+
+      meetingList.push({
+        agenda,
+        minutes,
+        audio,
+        meeting_type: "full_council",
+        meeting_date: parseDate(d[1], d[2]),
+        meeting_number: d[0],
+        // FIXME: get the location from audio html page.
+        meeting_location: "",
+      });
+    } catch (e) {
+      continue;
+    }
   }
-  return meetingList.filter(a => !!a.agenda && !!a.minutes);
+
+  return meetingList;
 }
 
 module.exports = async function read() {
