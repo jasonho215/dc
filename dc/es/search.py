@@ -67,6 +67,7 @@ class SearchClient:
             should.append({"match_phrase": {"meeting_number": term}})
             should.append({"match_phrase": {"meeting_location": term}})
             should.append({"match_phrase": {"page_content": term}})
+            should.append({"match_phrase": {"agenda_title": term}})
         return should
 
     async def search1(self, *, keyword):
@@ -131,7 +132,7 @@ class SearchClient:
                         for b5 in b4["by_document_type"]["buckets"]:
                             document_type = b5["key"]
                             count = b5["doc_count"]
-                        count_by_document_type[document_type] = count
+                            count_by_document_type[document_type] = count
                         output.append({
                             "district": district,
                             "year": year,
