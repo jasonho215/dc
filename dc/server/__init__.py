@@ -26,13 +26,17 @@ async def send_bytes(
     status=200,
     content_type=b"application/octet-stream",
 ):
+    content_length = len(body)
+    headers = [
+        [b"content-length", str(content_length).encode("utf-8")],
+    ]
+    if content_length > 0:
+        headers.append([b"content-type", content_type])
+
     await send({
         "type": "http.response.start",
         "status": status,
-        "headers": [
-            [b"content-length", str(len(body)).encode("utf-8")],
-            [b"content-type", content_type],
-        ],
+        "headers": headers,
     })
     await send({
         "type": "http.response.body",
