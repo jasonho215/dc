@@ -1,4 +1,6 @@
 const fs = require("fs");
+const path = require("path");
+
 const pdfjs = require("pdfjs-dist");
 
 function textContentToText(textContent) {
@@ -36,15 +38,23 @@ async function process(item, documentType) {
   return output;
 }
 
-module.exports = async function paginate(items) {
+module.exports = async function paginate() {
+  const basenames = fs.readdirSync("data/fullCouncil");
+
   let output = [];
-  for (const item of items) {
-    if (!item.agenda || !item.minutes) {
-      output.push(item);
-    } else {
-      output = output.concat(await process(item, "agenda"));
-      output = output.concat(await process(item, "minutes"));
+  for (const basename of basenames) {
+    const filepath = path.join("data/fullCouncil", basename);
+    const items = JSON.parse(fs.readFileSync(filepath, { encoding: "utf-8" }));
+
+    for (const item of items) {
+      if (!item.agenda || !item.minutes) {
+        output.push(item);
+      } else {
+        output = output.concat(await process(item, "agenda"));
+        output = output.concat(await process(item, "minutes"));
+      }
     }
   }
+
   return JSON.stringify(output, null, 2);
 }
