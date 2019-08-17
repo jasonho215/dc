@@ -1,5 +1,5 @@
 const fs = require("fs");
-const { doIfNeed } = require("./utils");
+const doIfNeed = require("./doIfNeed");
 const fullCouncil = require("./fullCouncil.js");
 const download = require("./download");
 const paginate = require("./paginate");

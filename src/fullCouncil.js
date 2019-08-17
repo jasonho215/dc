@@ -1,7 +1,10 @@
 const fs = require("fs");
 
 const puppeteer = require("puppeteer");
-const { doIfNeed, parseLink, parseDate } = require("./utils");
+
+const doIfNeed = require("./doIfNeed");
+const parseURL = require("./parseURL");
+const parseDate = require("./parseDate");
 const parseDuration = require("./parseDuration");
 
 const MEETING_COL_CNT = 7;
@@ -101,9 +104,9 @@ async function parseTable(browser, table, attrs) {
     let minutes;
     let audio;
     try {
-      agenda = parseLink(d[3]);
-      minutes = parseLink(d[4]);
-      audio = parseLink(d[5]);
+      agenda = parseURL(d[3]);
+      minutes = parseURL(d[4]);
+      audio = parseURL(d[5]);
     } catch (e) {
       continue;
     }

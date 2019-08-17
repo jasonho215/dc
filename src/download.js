@@ -2,7 +2,7 @@ const fs = require("fs");
 const { URL } = require("url");
 const path = require("path");
 const fetch = require("node-fetch");
-const { doIfNeed } = require("./utils");
+const doIfNeed = require("./doIfNeed");
 
 module.exports = async function download() {
   const basenames = fs.readdirSync("data/fullCouncil");
