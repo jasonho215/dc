@@ -122,18 +122,37 @@ async def search1(scope, receive, send):
 
 
 async def search2(scope, receive, send):
-    j = await read_json(scope, receive, send)
-    keyword = j["keyword"]
-    district = j["district"]
-    year = j["year"]
-    meeting_type = j["meeting_type"]
-    meeting_number = j["meeting_number"]
+    query_string = scope.get("query_string", b"").decode("utf-8")
+
+    # Prepare input
+    pairs = parse_query_string(query_string)
+    keyword = ""
+    district = ""
+    year = ""
+    meeting_type = ""
+    meeting_number = ""
+    document_type = ""
+    for name, value in pairs:
+        if name == "keyword":
+            keyword = value
+        if name == "district":
+            district = value
+        if name == "year":
+            year = value
+        if name == "meeting_type":
+            meeting_type = value
+        if name == "meeting_number":
+            meeting_number = value
+        if name == "document_type":
+            document_type = value
+
     body = await client.search2(
         keyword=keyword,
         district=district,
         year=year,
         meeting_type=meeting_type,
         meeting_number=meeting_number,
+        document_type=document_type,
     )
     await send_json(send, body)
 

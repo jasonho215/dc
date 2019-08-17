@@ -59,20 +59,22 @@ class SearchClient:
     async def refresh_index(self):
         await self.client.refresh_index(self.index_name)
 
-    def _keyword_to_should(self, keyword):
+    def _keyword_to_match_phrases(self, keyword):
         terms = keyword.split(" ")
         should = []
         for term in terms:
             term = term.strip()
-            should.append({"match_phrase": {"meeting_number": term}})
-            should.append({"match_phrase": {"meeting_location": term}})
             should.append({"match_phrase": {"page_content": term}})
             should.append({"match_phrase": {"agenda_title": term}})
+            should.append({"match_phrase": {"meeting_number": term}})
+            should.append({"match_phrase": {"meeting_location": term}})
         return should
 
     async def search1(self, *, keyword, district, year):
-        should = self._keyword_to_should(keyword)
-        filter_ = []
+        should = self._keyword_to_match_phrases(keyword)
+        filter_ = [
+            {"bool": {"should": should}},
+        ]
         if district:
             filter_.append({
                 "terms": {"district": district}
@@ -87,7 +89,9 @@ class SearchClient:
             },
             "query": {
                 "bool": {
-                    "should": should,
+                    "must": {
+                        "match_all": {},
+                    },
                     "filter": filter_,
                 },
             },
@@ -152,22 +156,31 @@ class SearchClient:
                         })
         return output
 
-    async def search2(self, *, keyword, district, year, meeting_type, meeting_number):
-        should = self._keyword_to_should(keyword)
+    async def search2(self, *, keyword, district, year, meeting_type, meeting_number, document_type):
+        should = self._keyword_to_match_phrases(keyword)
         return await self.client.search_document(self.index_name, {
             "_source": {
                 "excludes": ["page_content"],
             },
             "query": {
                 "bool": {
-                    "should": should,
+                    "must": {
+                        "match_all": {},
+                    },
+                    "filter": [
+                        {"bool": {"should": should}},
+                        {"term": {"district": district}},
+                        {"term": {"year": year}},
+                        {"term": {"meeting_type": meeting_type}},
+                        {"term": {"meeting_number": meeting_number}},
+                        {"term": {"document_type": document_type}},
+                    ],
                 },
             },
             "highlight": {
                 "fields": {
-                    "meeting_number": {},
-                    "meeting_location": {},
                     "page_content": {},
+                    "agenda_title": {},
                 },
             },
         })
