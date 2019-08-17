@@ -169,10 +169,13 @@ async def app(scope, receive, send):
         b"/search1": search1,
         b"/search2": search2,
     }
+
     try:
         handler = routes[raw_path]
     except KeyError:
         await send_status(send, 404)
+        return
+
     try:
         await handler(scope, receive, send)
     except StatusError as e:
