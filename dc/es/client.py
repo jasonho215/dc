@@ -1,12 +1,17 @@
+import io
 import json
 
 import httpx
 
 
+def dump_json_bytes(v):
+    byte = json.dumps(v, ensure_ascii=False).encode("utf-8")
+    return byte
+
+
 def json_request(body):
-    byte = json.dumps(body, ensure_ascii=False).encode("utf-8")
     return {
-        "data": byte,
+        "data": dump_json_bytes(body),
         "headers": {
             "content-type": "application/json",
         },
@@ -51,6 +56,30 @@ class ESClient:
 
     async def search_document(self, index_name, body):
         r = await self.client.post(f"{self.base_url}/{index_name}/_search", **json_request(body))
+        j = r.json()
+        raise_error(j)
+        return j
+
+    async def bulk_index(self, index_name, docs):
+        buf = io.BytesIO()
+        for id, body in docs:
+            buf.write(dump_json_bytes({
+                "index": {
+                    "_index": index_name,
+                    "_id": id,
+                },
+            }))
+            buf.write(b"\n")
+            buf.write(dump_json_bytes(body))
+            buf.write(b"\n")
+
+        r = await self.client.post(
+            f"{self.base_url}/_bulk",
+            data=buf.getvalue(),
+            headers={
+                "content-type": "application/x-ndjson",
+            }
+        )
         j = r.json()
         raise_error(j)
         return j

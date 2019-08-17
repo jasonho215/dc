@@ -54,6 +54,9 @@ class SearchClient:
     async def index_document(self, id, body):
         await self.client.index_document(self.index_name, id, body)
 
+    async def bulk_index(self, docs):
+        await self.client.bulk_index(self.index_name, docs)
+
     async def refresh_index(self):
         await self.client.refresh_index(self.index_name)
 
