@@ -70,8 +70,17 @@ class SearchClient:
             should.append({"match_phrase": {"agenda_title": term}})
         return should
 
-    async def search1(self, *, keyword):
+    async def search1(self, *, keyword, district, year):
         should = self._keyword_to_should(keyword)
+        filter_ = []
+        if district:
+            filter_.append({
+                "terms": {"district": district}
+            })
+        if year:
+            filter_.append({
+                "terms": {"year": year}
+            })
         return await self.client.search_document(self.index_name, {
             "_source": {
                 "excludes": ["page_content"],
@@ -79,6 +88,7 @@ class SearchClient:
             "query": {
                 "bool": {
                     "should": should,
+                    "filter": filter_,
                 },
             },
             "aggs": {

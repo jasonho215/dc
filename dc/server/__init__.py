@@ -1,10 +1,17 @@
 import io
 import json
 import os
+from urllib.parse import parse_qsl
 
 from ..es.search import SearchClient
 
 client = SearchClient(os.getenv("ES_ENDPOINT", "http://localhost:9200"))
+
+
+def parse_query_string(query_string):
+    if not query_string:
+        return []
+    return parse_qsl(query_string, keep_blank_values=True, strict_parsing=True)
 
 
 class StatusError(Exception):
@@ -91,9 +98,22 @@ async def read_json(scope, receive, send):
 
 
 async def search1(scope, receive, send):
-    j = await read_json(scope, receive, send)
-    keyword = j["keyword"]
-    result = await client.search1(keyword=keyword)
+    query_string = scope.get("query_string", b"").decode("utf-8")
+
+    # Prepare input
+    pairs = parse_query_string(query_string)
+    keyword = ""
+    district = []
+    year = []
+    for name, value in pairs:
+        if name == "keyword":
+            keyword = value
+        if name == "district":
+            district.append(value)
+        if name == "year":
+            year.append(value)
+
+    result = await client.search1(keyword=keyword, district=district, year=year)
     interpreted_result = client.interpret_search1_result(result)
     body = {
         "items": interpreted_result,
