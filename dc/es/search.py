@@ -44,8 +44,6 @@ class SearchClient:
                     # if document_type == (agenda || minutes)
                     "page_content": text,
                     # if document_type == audio
-                    "agenda_code": keyword,
-                    # if document_type == audio
                     "agenda_title": text,
                     # if document_type == audio
                     "duration": integer,

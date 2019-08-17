@@ -1,7 +1,6 @@
 const puppeteer = require("puppeteer");
 const { parseLink, parseDate } = require("./utils");
 const parseDuration = require("./parseDuration");
-const fixAgendaCode = require("./fixAgendaCode");
 
 const MEETING_COL_CNT = 7;
 const CIRCULATE_COL_CNT = 2;
@@ -44,11 +43,10 @@ async function parseAudio(browser, audioURL, attrs) {
       // We want to skip it.
       const title = anchor != null ? anchor.childNodes[1].textContent.trim() : null;
       const url = anchor != null ? anchor.href : null;
-      const agenda_code = cols[0].textContent.trim();
+      // We do not parse the agenda code because they are very irregular.
       const durationText = cols[2].textContent.trim();
 
       output.push({
-        agenda_code,
         title,
         url,
         durationText,
@@ -57,13 +55,11 @@ async function parseAudio(browser, audioURL, attrs) {
     return output;
   });
 
-  rows = fixAgendaCode(rows);
   rows = rows.filter(row => !!row.title && !!row.url && !!row.durationText);
   rows = rows.map(row => {
     return {
       ...attrs,
       meeting_location,
-      agenda_code: row.agenda_code,
       agenda_title: row.title,
       url: row.url,
       duration: parseDuration(row.durationText),
