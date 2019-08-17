@@ -1,7 +1,7 @@
 const fs = require("fs");
 const { URL } = require("url");
 
-const TIME_REGEX = /(上|下)午(\d+)時(\d+分|正)/u;
+const TIME_REGEX = /(上|中|下)午(\d+)時(\d+分|正)/u;
 
 function pad(s) {
   return ("0" + s).slice(-2);
@@ -14,9 +14,17 @@ function parseLink(val) {
 function parseDate(dateStr, timeStr) {
   const date = dateStr.slice(0, 10);
   const matches = TIME_REGEX.exec(timeStr);
+  if (matches == null) {
+    console.warn("invalid time: " + timeStr);
+    console.warn("fallback to 0930");
+    return `${date}T09:30:00.000+08:00`;
+  }
   let hour = parseInt(matches[2], 10);
   let minutes = "";
-  if (matches[1] === "下") {
+  // 下午11時 == 23:00
+  // 下午12時 == 12:00
+  // Chinese is so interesting...
+  if (matches[1] === "下" && hour < 12) {
     hour += 12;
   }
   if (matches[3] === "正") {
