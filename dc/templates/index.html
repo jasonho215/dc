@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+<!-- title -->
+{% block title %}Landing{% endblock %}
+<!-- start of header -->
+{% block head %}
+{{ super() }}
+<style>
+  .container {
+    display: table;
+    width: 100%;
+  }
+  .sideBar {
+    display: table-cell;
+    width: 25%;
+    height: 100%;
+  }
+  .content {
+    display: table-cell;
+    width: 75%;
+    height: 100%;
+  }
+</style>
+{% endblock %}
+<!-- end of header -->
+<!-- body -->
+{% block content %}
+<div class="container">
+  <div class="sideBar">
+    This is a side bar.
+  </div>
+  <div class="content">
+    The content
+  </div>
+</div>
+{% endblock %}
