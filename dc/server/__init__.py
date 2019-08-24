@@ -21,27 +21,15 @@ class StatusError(Exception):
 
 
 async def send_bytes(
-    send,
-    body=b"",
-    status=200,
-    content_type=b"application/octet-stream",
+    send, body=b"", status=200, content_type=b"application/octet-stream"
 ):
     content_length = len(body)
-    headers = [
-        [b"content-length", str(content_length).encode("utf-8")],
-    ]
+    headers = [[b"content-length", str(content_length).encode("utf-8")]]
     if content_length > 0:
         headers.append([b"content-type", content_type])
 
-    await send({
-        "type": "http.response.start",
-        "status": status,
-        "headers": headers,
-    })
-    await send({
-        "type": "http.response.body",
-        "body": body,
-    })
+    await send({"type": "http.response.start", "status": status, "headers": headers})
+    await send({"type": "http.response.body", "body": body})
 
 
 async def send_json(send, j):
@@ -119,9 +107,7 @@ async def search1(scope, receive, send):
 
     result = await client.search1(keyword=keyword, district=district, year=year)
     interpreted_result = client.interpret_search1_result(result)
-    body = {
-        "items": interpreted_result,
-    }
+    body = {"items": interpreted_result}
     await send_json(send, body)
 
 
@@ -168,11 +154,7 @@ async def root(scope, receive, send):
 async def app(scope, receive, send):
     assert scope["type"] == "http"
     raw_path = scope["raw_path"]
-    routes = {
-        b"/": root,
-        b"/search1": search1,
-        b"/search2": search2,
-    }
+    routes = {b"/": root, b"/search1": search1, b"/search2": search2}
 
     try:
         handler = routes[raw_path]
