@@ -1,3 +1,26 @@
+## API
+
+### GET /search1
+
+#### Query Parameters
+
+- keyword
+- district
+- year
+
+### GET /search2
+
+#### Query Parameters
+
+- keyword
+- district
+- year
+- meeting_type
+- meeting_number
+- document_type
+
+## Development
+
 ```sh
 pipenv install --dev
 pipenv install
