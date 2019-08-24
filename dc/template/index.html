@@ -3,13 +3,13 @@
 {% block head %}
 {{ super() }}
 {% endblock head %} {% block body %}
-<div class="container">
+<div class="content">
   <div class="sideBar">
     {% include "component/sidebar.html" %}
   </div>
 </div>
 <style>
-  .container {
+  div.content {
     display: table;
   }
   div.content > div.sideBar {
