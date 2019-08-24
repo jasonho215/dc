@@ -4,6 +4,7 @@ import os
 from urllib.parse import parse_qsl
 
 from ..es.search import SearchClient
+from ..template import get_template
 
 client = SearchClient(os.getenv("ES_ENDPOINT", "http://localhost:9200"))
 
@@ -38,6 +39,10 @@ async def send_json(send, j):
         body=json.dumps(j, ensure_ascii=False).encode("utf-8"),
         content_type=b"application/json",
     )
+
+
+async def send_html(send, html):
+    await send_bytes(send, body=str(html).encode("utf-8"), content_type=b"text/html")
 
 
 async def send_status(send, status):
@@ -148,7 +153,9 @@ async def search2(scope, receive, send):
 
 
 async def root(scope, receive, send):
-    await send_status(send, 200)
+    template = get_template("index.html")
+    html = await template.render_async()
+    await send_html(send, html)
 
 
 async def app(scope, receive, send):
