@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: es-pv
+  namespace: dcsearch
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 30Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: es
+  namespace: dcsearch
+  labels:
+    app: es
+spec:
+  selector:
+    app: es
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 9200
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: es
+  namespace: dcsearch
+  labels:
+    app: es
+spec:
+  # This must be 1.
+  # Elasticsearch has its own mechanism of clustering
+  replicas: 1
+  selector:
+    matchLabels:
+      app: es
+  template:
+    metadata:
+      labels:
+        app: es
+    spec:
+      volumes:
+      - name: es-data
+        persistentVolumeClaim:
+          claimName: es-pv
+      containers:
+      - name: es
+        image: quay.io/louischan/elasticsearch-icu:0.1.0
+        env:
+        - name: "discovery.type"
+          value: "single-node"
+        ports:
+        - containerPort: 9200
+        volumeMounts:
+        - name: es-data
+          mountPath: /usr/share/elasticsearch/data
