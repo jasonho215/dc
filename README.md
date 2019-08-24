@@ -19,6 +19,36 @@
 - meeting_number
 - document_type
 
+### district
+
+- wc
+- south
+- east
+- kt
+- ssp
+- ytm
+- wts
+- kc
+- island
+- tw
+- yl
+- north
+- st
+- sk
+- kwt
+- tp
+- tm
+
+### meeting_type
+
+- full_council
+
+### document_type
+
+- agenda
+- minutes
+- audio
+
 ## Development
 
 ```sh
