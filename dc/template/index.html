@@ -3,5 +3,18 @@
 {% block head %}
 {{ super() }}
 {% endblock head %} {% block body %}
-<h1>Work in progress!!</h1>
+<div class="container">
+  <div class="sideBar">
+    {% include "component/sidebar.html" %}
+  </div>
+</div>
+<style>
+  .container {
+    display: table;
+  }
+  div.content > div.sideBar {
+    display: table-cell;
+    padding: 72px 64px 72px 47px;
+  }
+</style>
 {% endblock body %}

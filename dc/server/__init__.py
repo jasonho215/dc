@@ -1,6 +1,7 @@
 import io
 import json
 import os
+from datetime import datetime
 from urllib.parse import parse_qsl
 
 from ..es.search import SearchClient
@@ -154,7 +155,8 @@ async def search2(scope, receive, send):
 
 async def root(scope, receive, send):
     template = get_template("index.html")
-    html = await template.render_async()
+    curr_year = datetime.utcnow().year
+    html = await template.render_async(start_year=curr_year - 3, end_year=curr_year)
     await send_html(send, html)
 
 
