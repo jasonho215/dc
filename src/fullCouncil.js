@@ -93,9 +93,8 @@ async function parseTable(browser, table, attrs) {
 
     const meeting_number = d[0];
     const meeting_date = parseDate(d[1], d[2]);
-    const meeting_type = "full_council";
 
-    const { meeting_location, rows } = await parseAudio(browser, audio, { ...attrs,  meeting_number, meeting_date, meeting_type });
+    const { meeting_location, rows } = await parseAudio(browser, audio, { ...attrs,  meeting_number, meeting_date });
 
     meetingList = meetingList.concat(rows);
 
@@ -103,7 +102,6 @@ async function parseTable(browser, table, attrs) {
       ...attrs,
       agenda,
       minutes,
-      meeting_type,
       meeting_date,
       meeting_number,
       meeting_location,
@@ -128,7 +126,7 @@ module.exports = async function read() {
       for (const table of tables) {
         const id = String(await (await table.getProperty("id")).jsonValue());
         const year = parseInt(id.slice(5), 10);
-        const r = await parseTable(browser, table, { year, district });
+        const r = await parseTable(browser, table, { year, district, meeting_type: "full_council" });
         result = result.concat(r);
       }
       await page.close();
