@@ -4,6 +4,9 @@ module.exports = function parseDuration(s) {
   // 0:32
   // 2:15:32
   // 2：15：32
+  // :00:00:43
+  // 00:13:45:
+  // 00::00:03
   let hour = 0;
   let minute = 0;
   let second = 0;
@@ -14,7 +17,9 @@ module.exports = function parseDuration(s) {
     minute = match[1];
     second = match[2];
   } else {
-    const parts = s.replace("：", ":").split(":");
+    s = s.replace("：", ":");
+    s = s.replace(/^:/, "").replace(/:$/, "").replace(/:+/, ":");
+    const parts = s.split(":");
     switch (parts.length) {
     case 3:
       hour = parts[0];
