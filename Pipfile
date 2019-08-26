@@ -7,10 +7,15 @@ verify_ssl = true
 isort = "*"
 flake8 = "*"
 pytest = "*"
+black = "*"
 
 [packages]
 uvicorn = "==0.8.6"
 httpx = "==0.6.8"
+jinja2 = "==2.10.1"
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true
