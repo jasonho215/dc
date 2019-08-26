@@ -6,31 +6,11 @@ const doIfNeed = require("./doIfNeed");
 const parseURL = require("./parseURL");
 const parseDate = require("./parseDate");
 const parseDuration = require("./parseDuration");
+const { DISTRICTS } = require("./district");
 
 const MEETING_COL_CNT = 7;
 const CIRCULATE_COL_CNT = 2;
 
-const DISTRICTS = [
-  // The content type is MS doc :(
-  // "central",
-  "wc",
-  "south",
-  "east",
-  "kt",
-  "ssp",
-  "ytm",
-  "wts",
-  "kc",
-  "island",
-  "tw",
-  "yl",
-  "north",
-  "st",
-  "sk",
-  "kwt",
-  "tp",
-  "tm",
-];
 
 async function parseAudio(browser, audioURL, attrs) {
   const page = await browser.newPage();
