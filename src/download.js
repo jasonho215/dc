@@ -12,7 +12,9 @@ module.exports = async function download() {
 
     for (const basename of basenames) {
       const filepath = path.join(`data/${dir}`, basename);
-      const items = JSON.parse(fs.readFileSync(filepath, { encoding: "utf-8" }));
+      const items = JSON.parse(
+        fs.readFileSync(filepath, { encoding: "utf-8" })
+      );
 
       for (const item of items) {
         const { agenda, minutes } = item;
@@ -38,4 +40,4 @@ module.exports = async function download() {
       }
     }
   }
-}
+};

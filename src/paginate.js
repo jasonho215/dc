@@ -48,7 +48,9 @@ module.exports = async function paginate() {
 
     for (const basename of basenames) {
       const filepath = path.join(`data/${dir}`, basename);
-      const items = JSON.parse(fs.readFileSync(filepath, { encoding: "utf-8" }));
+      const items = JSON.parse(
+        fs.readFileSync(filepath, { encoding: "utf-8" })
+      );
 
       for (const item of items) {
         if (!item.agenda || !item.minutes) {
@@ -62,4 +64,4 @@ module.exports = async function paginate() {
   }
 
   return JSON.stringify(output, null, 2);
-}
+};

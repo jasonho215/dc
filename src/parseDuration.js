@@ -13,25 +13,28 @@ module.exports = function parseDuration(s) {
 
   let match = null;
 
-  if (match = /^(\d+)(?:['"])(\d+)$/.exec(s)) {
+  if ((match = /^(\d+)(?:['"])(\d+)$/.exec(s))) {
     minute = match[1];
     second = match[2];
   } else {
     s = s.replace("：", ":");
-    s = s.replace(/^:/, "").replace(/:$/, "").replace(/:+/, ":");
+    s = s
+      .replace(/^:/, "")
+      .replace(/:$/, "")
+      .replace(/:+/, ":");
     const parts = s.split(":");
     switch (parts.length) {
-    case 3:
-      hour = parts[0];
-      minute = parts[1];
-      second = parts[2];
-      break;
-    case 2:
-      minute = parts[0];
-      second = parts[1];
-      break;
-    default:
-      throw new Error("invalid duration: " + JSON.stringify(s));
+      case 3:
+        hour = parts[0];
+        minute = parts[1];
+        second = parts[2];
+        break;
+      case 2:
+        minute = parts[0];
+        second = parts[1];
+        break;
+      default:
+        throw new Error("invalid duration: " + JSON.stringify(s));
     }
   }
 
@@ -40,4 +43,4 @@ module.exports = function parseDuration(s) {
   second = parseInt(second, 10);
 
   return hour * 3600 + minute * 60 + second;
-}
+};

@@ -8,7 +8,10 @@ const CIRCULATE_COL_CNT = 2;
 async function parseAudio(browser, audioURL, attrs) {
   const page = await browser.newPage();
   await page.goto(audioURL);
-  const meeting_location = await page.$eval("table.meeting tr:nth-child(3) td:nth-child(2)", td => td.textContent.trim());
+  const meeting_location = await page.$eval(
+    "table.meeting tr:nth-child(3) td:nth-child(2)",
+    td => td.textContent.trim()
+  );
 
   let rows = await page.$$eval("table.meeting", nodes => {
     const output = [];
@@ -25,7 +28,8 @@ async function parseAudio(browser, audioURL, attrs) {
       const anchor = cols[1].querySelector("a");
       // The first childNode is <span class="access">這連結會以新視窗打開。</span>
       // We want to skip it.
-      const title = anchor != null ? anchor.childNodes[1].textContent.trim() : null;
+      const title =
+        anchor != null ? anchor.childNodes[1].textContent.trim() : null;
       const url = anchor != null ? anchor.href : null;
       // We do not parse the agenda code because they are very irregular.
       const durationText = cols[2].textContent.trim();
@@ -92,7 +96,11 @@ async function parseTable(browser, table, attrs) {
     const meeting_number = d[0];
     const meeting_date = parseDate(d[1], d[2]);
 
-    const { meeting_location, rows } = await parseAudio(browser, audio, { ...attrs,  meeting_number, meeting_date });
+    const { meeting_location, rows } = await parseAudio(browser, audio, {
+      ...attrs,
+      meeting_number,
+      meeting_date,
+    });
 
     meetingList = meetingList.concat(rows);
 

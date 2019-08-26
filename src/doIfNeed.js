@@ -7,4 +7,4 @@ module.exports = async function doIfNeed(f, path) {
     const r = await f();
     fs.writeFileSync(path, r);
   }
-}
+};

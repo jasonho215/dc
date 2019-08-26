@@ -26,4 +26,4 @@ module.exports = function parseDate(dateStr, timeStr) {
     minutes = matches[3].slice(0, 2);
   }
   return `${date}T${pad(hour)}:${pad(minutes)}:00.000+08:00`;
-}
+};
