@@ -15,7 +15,12 @@ async function parseAudio(browser, audioURL, attrs) {
     const table = nodes[1];
     const rows = Array.from(table.querySelectorAll("tr")).slice(1);
     for (const row of rows) {
+      // Sometimes, the td can contain an embedded table.
+      // See https://www.districtcouncils.gov.hk/tp/tc_chi/meetings/committees/dc_committees_meetings_audio.php?meeting_id=11994
       const cols = Array.from(row.querySelectorAll("td"));
+      if (cols.length !== 3) {
+        continue;
+      }
 
       const anchor = cols[1].querySelector("a");
       // The first childNode is <span class="access">這連結會以新視窗打開。</span>
