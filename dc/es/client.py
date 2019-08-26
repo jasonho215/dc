@@ -12,9 +12,7 @@ def dump_json_bytes(v):
 def json_request(body):
     return {
         "data": dump_json_bytes(body),
-        "headers": {
-            "content-type": "application/json",
-        },
+        "headers": {"content-type": "application/json"},
     }
 
 
@@ -50,12 +48,16 @@ class ESClient:
         raise_error(j)
 
     async def index_document(self, index_name, id, body):
-        r = await self.client.put(f"{self.base_url}/{index_name}/_doc/{id}", **json_request(body))
+        r = await self.client.put(
+            f"{self.base_url}/{index_name}/_doc/{id}", **json_request(body)
+        )
         j = r.json()
         raise_error(j)
 
     async def search_document(self, index_name, body):
-        r = await self.client.post(f"{self.base_url}/{index_name}/_search", **json_request(body))
+        r = await self.client.post(
+            f"{self.base_url}/{index_name}/_search", **json_request(body)
+        )
         j = r.json()
         raise_error(j)
         return j
@@ -63,12 +65,7 @@ class ESClient:
     async def bulk_index(self, index_name, docs):
         buf = io.BytesIO()
         for id, body in docs:
-            buf.write(dump_json_bytes({
-                "index": {
-                    "_index": index_name,
-                    "_id": id,
-                },
-            }))
+            buf.write(dump_json_bytes({"index": {"_index": index_name, "_id": id}}))
             buf.write(b"\n")
             buf.write(dump_json_bytes(body))
             buf.write(b"\n")
@@ -76,9 +73,7 @@ class ESClient:
         r = await self.client.post(
             f"{self.base_url}/_bulk",
             data=buf.getvalue(),
-            headers={
-                "content-type": "application/x-ndjson",
-            }
+            headers={"content-type": "application/x-ndjson"},
         )
         j = r.json()
         raise_error(j)

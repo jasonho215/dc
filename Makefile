@@ -1,10 +1,13 @@
+PYTHON_PACKAGE := dc
+
 .PHONY: format
 format:
-	isort --recursive .
+	isort --recursive $(PYTHON_PACKAGE)
+	black $(PYTHON_PACKAGE)
 
 .PHONY: lint
 lint:
-	flake8 .
+	flake8 $(PYTHON_PACKAGE)
 
 .PHONY: build-es
 build-es:

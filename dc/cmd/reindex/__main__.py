@@ -9,7 +9,7 @@ base_url = "http://localhost:9200"
 def chunks(l, n):
     """Yield successive n-sized chunks from l."""
     for i in range(0, len(l), n):
-        yield l[i:i + n]
+        yield l[i : i + n]
 
 
 async def main():

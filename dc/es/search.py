@@ -21,35 +21,38 @@ class SearchClient:
             await self.client.delete_index(self.index_name)
         except ESError:
             pass
-        await self.client.create_index(self.index_name, {
-            "mappings": {
-                "properties": {
-                    "district": keyword,
-                    "year": integer,
-                    # full_council, committee, working_group
-                    "meeting_type": keyword,
-                    "meeting_number": keyword,
-                    "meeting_date": date,
-                    "meeting_location": text,
-                    "content_type": keyword,
-                    "url": keyword,
-                    # agenda, minutes, audio
-                    "document_type": keyword,
-                    # if meeting_type == committee
-                    "committee_name": text,
-                    # if meeting_type == working_group
-                    "wg_name": text,
-                    # if document_type == (agenda || minutes)
-                    "page_number": integer,
-                    # if document_type == (agenda || minutes)
-                    "page_content": text,
-                    # if document_type == audio
-                    "agenda_title": text,
-                    # if document_type == audio
-                    "duration": integer,
-                },
+        await self.client.create_index(
+            self.index_name,
+            {
+                "mappings": {
+                    "properties": {
+                        "district": keyword,
+                        "year": integer,
+                        # full_council, committee, working_group
+                        "meeting_type": keyword,
+                        "meeting_number": keyword,
+                        "meeting_date": date,
+                        "meeting_location": text,
+                        "content_type": keyword,
+                        "url": keyword,
+                        # agenda, minutes, audio
+                        "document_type": keyword,
+                        # if meeting_type == committee
+                        "committee_name": text,
+                        # if meeting_type == working_group
+                        "wg_name": text,
+                        # if document_type == (agenda || minutes)
+                        "page_number": integer,
+                        # if document_type == (agenda || minutes)
+                        "page_content": text,
+                        # if document_type == audio
+                        "agenda_title": text,
+                        # if document_type == audio
+                        "duration": integer,
+                    }
+                }
             },
-        })
+        )
 
     async def index_document(self, id, body):
         await self.client.index_document(self.index_name, id, body)
@@ -73,65 +76,45 @@ class SearchClient:
 
     async def search1(self, *, keyword, district, year):
         should = self._keyword_to_match_phrases(keyword)
-        filter_ = [
-            {"bool": {"should": should}},
-        ]
+        filter_ = [{"bool": {"should": should}}]
         if district:
-            filter_.append({
-                "terms": {"district": district}
-            })
+            filter_.append({"terms": {"district": district}})
         if year:
-            filter_.append({
-                "terms": {"year": year}
-            })
-        return await self.client.search_document(self.index_name, {
-            "_source": {
-                "excludes": ["page_content"],
-            },
-            "query": {
-                "bool": {
-                    "must": {
-                        "match_all": {},
-                    },
-                    "filter": filter_,
-                },
-            },
-            "aggs": {
-                "by_district": {
-                    "terms": {
-                        "field": "district",
-                    },
-                    "aggs": {
-                        "by_year": {
-                            "terms": {
-                                "field": "year",
-                            },
-                            "aggs": {
-                                "by_meeting_type": {
-                                    "terms": {
-                                        "field": "meeting_type",
-                                    },
-                                    "aggs": {
-                                        "by_meeting_number": {
-                                            "terms": {
-                                                "field": "meeting_number",
-                                            },
-                                            "aggs": {
-                                                "by_document_type": {
-                                                    "terms": {
-                                                        "field": "document_type",
-                                                    },
+            filter_.append({"terms": {"year": year}})
+        return await self.client.search_document(
+            self.index_name,
+            {
+                "_source": {"excludes": ["page_content"]},
+                "query": {"bool": {"must": {"match_all": {}}, "filter": filter_}},
+                "aggs": {
+                    "by_district": {
+                        "terms": {"field": "district"},
+                        "aggs": {
+                            "by_year": {
+                                "terms": {"field": "year"},
+                                "aggs": {
+                                    "by_meeting_type": {
+                                        "terms": {"field": "meeting_type"},
+                                        "aggs": {
+                                            "by_meeting_number": {
+                                                "terms": {"field": "meeting_number"},
+                                                "aggs": {
+                                                    "by_document_type": {
+                                                        "terms": {
+                                                            "field": "document_type"
+                                                        }
+                                                    }
                                                 },
-                                            },
+                                            }
                                         },
-                                    },
+                                    }
                                 },
-                            },
+                            }
                         },
-                    },
+                    }
                 },
             },
-        })
+        )
 
     def interpret_search1_result(self, result):
         output = []
@@ -148,40 +131,38 @@ class SearchClient:
                             document_type = b5["key"]
                             count = b5["doc_count"]
                             count_by_document_type[document_type] = count
-                        output.append({
-                            "district": district,
-                            "year": year,
-                            "meeting_type": meeting_type,
-                            "meeting_number": meeting_number,
-                            "count_by_document_type": count_by_document_type,
-                        })
+                        output.append(
+                            {
+                                "district": district,
+                                "year": year,
+                                "meeting_type": meeting_type,
+                                "meeting_number": meeting_number,
+                                "count_by_document_type": count_by_document_type,
+                            }
+                        )
         return output
 
-    async def search2(self, *, keyword, district, year, meeting_type, meeting_number, document_type):
+    async def search2(
+        self, *, keyword, district, year, meeting_type, meeting_number, document_type
+    ):
         should = self._keyword_to_match_phrases(keyword)
-        return await self.client.search_document(self.index_name, {
-            "_source": {
-                "excludes": ["page_content"],
-            },
-            "query": {
-                "bool": {
-                    "must": {
-                        "match_all": {},
-                    },
-                    "filter": [
-                        {"bool": {"should": should}},
-                        {"term": {"district": district}},
-                        {"term": {"year": year}},
-                        {"term": {"meeting_type": meeting_type}},
-                        {"term": {"meeting_number": meeting_number}},
-                        {"term": {"document_type": document_type}},
-                    ],
+        return await self.client.search_document(
+            self.index_name,
+            {
+                "_source": {"excludes": ["page_content"]},
+                "query": {
+                    "bool": {
+                        "must": {"match_all": {}},
+                        "filter": [
+                            {"bool": {"should": should}},
+                            {"term": {"district": district}},
+                            {"term": {"year": year}},
+                            {"term": {"meeting_type": meeting_type}},
+                            {"term": {"meeting_number": meeting_number}},
+                            {"term": {"document_type": document_type}},
+                        ],
+                    }
                 },
+                "highlight": {"fields": {"page_content": {}, "agenda_title": {}}},
             },
-            "highlight": {
-                "fields": {
-                    "page_content": {},
-                    "agenda_title": {},
-                },
-            },
-        })
+        )
