@@ -3,11 +3,15 @@
   "version": "1.0.0",
   "author": "Jason Ho <jasonho@oursky.com>",
   "scripts": {
-    "generate": "node src/main.js"
+    "generate": "node src/main.js",
+    "format": "prettier --write --list-different 'src/**/*.js'"
   },
   "dependencies": {
     "node-fetch": "2.6.0",
     "pdfjs-dist": "2.1.266",
     "puppeteer": "1.19.0"
+  },
+  "devDependencies": {
+    "prettier": "1.18.2"
   }
 }
