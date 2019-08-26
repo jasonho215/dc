@@ -38,20 +38,25 @@ async function process(item, documentType) {
   return output;
 }
 
+const DIRS = ["fullCouncil", "committee"];
+
 module.exports = async function paginate() {
-  const basenames = fs.readdirSync("data/fullCouncil");
-
   let output = [];
-  for (const basename of basenames) {
-    const filepath = path.join("data/fullCouncil", basename);
-    const items = JSON.parse(fs.readFileSync(filepath, { encoding: "utf-8" }));
 
-    for (const item of items) {
-      if (!item.agenda || !item.minutes) {
-        output.push(item);
-      } else {
-        output = output.concat(await process(item, "agenda"));
-        output = output.concat(await process(item, "minutes"));
+  for (const dir of DIRS) {
+    const basenames = fs.readdirSync(`data/${dir}`);
+
+    for (const basename of basenames) {
+      const filepath = path.join(`data/${dir}`, basename);
+      const items = JSON.parse(fs.readFileSync(filepath, { encoding: "utf-8" }));
+
+      for (const item of items) {
+        if (!item.agenda || !item.minutes) {
+          output.push(item);
+        } else {
+          output = output.concat(await process(item, "agenda"));
+          output = output.concat(await process(item, "minutes"));
+        }
       }
     }
   }
