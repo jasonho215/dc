@@ -14,7 +14,7 @@ function textContentToText(textContent) {
 async function process(item, documentType) {
   const output = [];
   const url = item[documentType];
-  const filepath = "data/" + new URL(url).pathname;
+  const filepath = "data" + new URL(url).pathname;
   const buffer = fs.readFileSync(filepath);
   const doc = await pdfjs.getDocument(buffer).promise;
   for (let i = 1; i <= doc.numPages; ++i) {

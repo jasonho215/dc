@@ -22,10 +22,10 @@ module.exports = async function download() {
           continue;
         }
 
-        const agendaPath = "data/" + new URL(agenda).pathname;
+        const agendaPath = "data" + new URL(agenda).pathname;
         const agendaDir = path.dirname(agendaPath);
 
-        const minutesPath = "data/" + new URL(minutes).pathname;
+        const minutesPath = "data" + new URL(minutes).pathname;
         const minutesDir = path.dirname(minutesPath);
 
         await doIfNeed(async () => {
