@@ -11,12 +11,20 @@ function textContentToText(textContent) {
   return text;
 }
 
-async function process(item, documentType) {
+async function process(logStream, item, documentType) {
   const output = [];
   const url = item[documentType];
   const filepath = "data" + new URL(url).pathname;
   const buffer = fs.readFileSync(filepath);
-  const doc = await pdfjs.getDocument(buffer).promise;
+
+  let doc;
+  try {
+    doc = await pdfjs.getDocument(buffer).promise;
+  } catch (e) {
+    logStream.write(filepath + "\n");
+    return output;
+  }
+
   for (let i = 1; i <= doc.numPages; ++i) {
     const pageProxy = await doc.getPage(i);
     const textContent = await pageProxy.getTextContent();
@@ -43,6 +51,8 @@ const DIRS = ["fullCouncil", "committee"];
 module.exports = async function paginate() {
   let output = [];
 
+  const logStream = fs.createWriteStream("INVALID_PDF");
+
   for (const dir of DIRS) {
     const basenames = fs.readdirSync(`data/${dir}`);
 
@@ -56,12 +66,14 @@ module.exports = async function paginate() {
         if (!item.agenda || !item.minutes) {
           output.push(item);
         } else {
-          output = output.concat(await process(item, "agenda"));
-          output = output.concat(await process(item, "minutes"));
+          output = output.concat(await process(logStream, item, "agenda"));
+          output = output.concat(await process(logStream, item, "minutes"));
         }
       }
     }
   }
+
+  logStream.end();
 
   return JSON.stringify(output, null, 2);
 };
