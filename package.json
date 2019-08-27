@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "node-fetch": "2.6.0",
-    "pdfjs-dist": "2.1.266",
+    "pdfjs-dist": "2.2.228",
     "puppeteer": "1.19.0"
   },
   "devDependencies": {
