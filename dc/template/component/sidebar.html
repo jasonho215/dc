@@ -1,186 +1,57 @@
+{% import "macro.j2" as macro %}
 <div id="sidebar">
   <h1 class="title">區議會文件<br />搜尋器</h1>
-  <form id="search_form" method="GET">
+  <form id="search_form" method="GET" action="/q">
     <fieldset>
       <legend>關鍵字</legend>
-      <input id="keyword" name="keyword" type="text" />
+      <input id="keyword" name="keyword" type="text" value="{{ keyword }}" />
     </fieldset>
     <fieldset>
       <legend>地區</legend>
       <ul id="districtList" class="checkboxList">
+        {% for district_val, label in macro.DISTRICT_MAP.items() %}
         <li>
           <div>
-            <input id="tm" name="district" type="checkbox" value="tm" /><label
-              for="tm"
-              >屯門</label
+            <input id="{{ district_val }}" name="district" type="checkbox" value="{{ district_val }}" {{ "checked" if district_val in district }}/><label
+              for="{{ district_val }}"
+              >{{ label }}</label
             >
           </div>
         </li>
-        <li>
-          <div>
-            <input id="yl" name="district" type="checkbox" value="yl" /><label
-              for="yl"
-              >元朗</label
-            >
-          </div>
-        </li>
-        <li>
-          <div>
-            <input
-              id="island"
-              name="district"
-              type="checkbox"
-              value="island"
-            /><label for="island">中西區</label>
-          </div>
-        </li>
-        <li>
-          <div>
-            <input id="ytm" name="district" type="checkbox" value="ytm" /><label
-              for="ytm"
-              >油尖旺</label
-            >
-          </div>
-        </li>
-        <li>
-          <div>
-            <input
-              id="south"
-              name="district"
-              type="checkbox"
-              value="south"
-            /><label for="south">南區</label>
-          </div>
-        </li>
-        <li>
-          <div>
-            <input id="kt" name="district" type="checkbox" value="kt" /><label
-              for="kt"
-              >觀塘</label
-            >
-          </div>
-        </li>
-        <li>
-          <div>
-            <input id="wts" name="district" type="checkbox" value="wts" /><label
-              for="wts"
-              >黃大仙</label
-            >
-          </div>
-        </li>
-        <li>
-          <div>
-            <input id="ssp" name="district" type="checkbox" value="ssp" /><label
-              for="ssp"
-              >深水埗</label
-            >
-          </div>
-        </li>
-        <li>
-          <div>
-            <input id="st" name="district" type="checkbox" value="st" /><label
-              for="st"
-              >沙田</label
-            >
-          </div>
-        </li>
-        <li>
-          <div>
-            <input id="tp" name="district" type="checkbox" value="tp" /><label
-              for="tp"
-              >大埔</label
-            >
-          </div>
-        </li>
-        <li>
-          <div>
-            <input id="tw" name="district" type="checkbox" value="tw" /><label
-              for="tw"
-              >tw</label
-            >
-          </div>
-        </li>
-        <li>
-          <div>
-            <input id="wc" name="district" type="checkbox" value="wc" /><label
-              for="wc"
-              >wc</label
-            >
-          </div>
-        </li>
-        <li>
-          <div>
-            <input
-              id="east"
-              name="district"
-              type="checkbox"
-              value="east"
-            /><label for="east">east</label>
-          </div>
-        </li>
-        <li>
-          <div>
-            <input id="kc" name="district" type="checkbox" value="kc" /><label
-              for="kc"
-              >kc</label
-            >
-          </div>
-        </li>
-        <li>
-          <div>
-            <input
-              id="north"
-              name="district"
-              type="checkbox"
-              value="north"
-            /><label for="north">north</label>
-          </div>
-        </li>
-        <li>
-          <div>
-            <input id="kwt" name="district" type="checkbox" value="kwt" /><label
-              for="kwt"
-              >kwt</label
-            >
-          </div>
-        </li>
-        <li>
-          <div>
-            <input id="sk" name="district" type="checkbox" value="sk" /><label
-              for="sk"
-              >sk</label
-            >
-          </div>
-        </li>
+        {% endfor %}
       </ul>
     </fieldset>
     <fieldset>
       <legend>會議類別</legend>
       <ul id="meeting_type" class="checkboxList">
+        {% for meeting_type_val, label in macro.MEETING_TYPE_MAP.items() %}
         <li>
           <div>
             <input
-              id="full_council"
+              id="{{ meeting_type_val }}"
               name="meeting_type"
               type="checkbox"
-              value="full_council"
-            /><label for="full_council">區議會大會</label>
+              value="{{ meeting_type_val }}"
+              {{ "checked" if meeting_type_val in meeting_type }}
+            /><label for="{{ meeting_type_val }}">{{label}}</label>
           </div>
         </li>
+        {% endfor %}
       </ul>
     </fieldset>
     <fieldset>
       <legend>年份</legend>
       <ul id="year" class="checkboxList">
-        {% for year in range(start_year, end_year + 1) %}
+        {% for val in range(start_year, end_year + 1) %}
         <li>
           <div>
             <input
-              id="year_{{ year }}"
+              id="year_{{ val }}"
               name="year"
               type="checkbox"
-              value="{{ year }}"
-            /><label for="year_{{ year }}">{{ year }}</label>
+              value="{{ val }}"
+              {{ "checked" if "{}".format(val) in year }}
+            /><label for="year_{{ val }}">{{ val }}</label>
           </div>
         </li>
         {% endfor %}
@@ -255,8 +126,11 @@
     letter-spacing: 0;
     color: #ffffff;
     -webkit-appearance: button;
+    border: none;
+    cursor: pointer;
   }
   div#sidebar input#submitBtn:disabled {
     background: #d0d0d0 0% 0% no-repeat padding-box;
+    cursor:not-allowed;
   }
 </style>

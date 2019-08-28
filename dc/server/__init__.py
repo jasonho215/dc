@@ -160,10 +160,45 @@ async def root(scope, receive, send):
     await send_html(send, html)
 
 
+async def page_query(scope, receive, send):
+    query_string = scope.get("query_string", b"").decode("utf-8")
+
+    # Prepare input
+    pairs = parse_query_string(query_string)
+    keyword = ""
+    district = []
+    year = []
+    meeting_type = []
+    for name, value in pairs:
+        if name == "keyword":
+            keyword = value
+        if name == "district":
+            district.append(value)
+        if name == "year":
+            year.append(value)
+        if name == "meeting_type":
+            meeting_type.append(value)
+
+    result = await client.search1(keyword=keyword, district=district, year=year)
+    interpreted_result = client.interpret_search1_result(result)
+    template = get_template("index.html")
+    curr_year = datetime.utcnow().year
+    html = await template.render_async(
+        start_year=curr_year - 3,
+        end_year=curr_year,
+        result=interpreted_result,
+        keyword=keyword,
+        district=district,
+        year=year,
+        meeting_type=meeting_type,
+    )
+    await send_html(send, html)
+
+
 async def app(scope, receive, send):
     assert scope["type"] == "http"
     raw_path = scope["raw_path"]
-    routes = {b"/": root, b"/search1": search1, b"/search2": search2}
+    routes = {b"/": root, b"/search1": search1, b"/search2": search2, b"/q": page_query}
 
     try:
         handler = routes[raw_path]

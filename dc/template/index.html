@@ -5,16 +5,40 @@
 {% endblock head %} {% block body %}
 <div class="content">
   <div class="sideBar">
-    {% include "component/sidebar.html" %}
+    {% include "component/sidebar.html" with context %}
+  </div>
+  <div class="searchResults">
+      <p class="searchResultCount">共{{ result|length }}個會議結果</p>
+    {% for item in result %}
+        {% include "component/result_cell.html" %}
+    {% endfor %}
   </div>
 </div>
 <style>
   div.content {
     display: table;
+    width: 100%;
   }
   div.content > div.sideBar {
     display: table-cell;
     padding: 72px 64px 72px 47px;
+    width: 10%;
+  }
+  div.content > div.searchResults {
+      display: table-cell;
+      padding-top: 64px;
+      padding-right: 47px;
+      padding-bottom: 64px;
+  }
+  .searchResultCount {
+    text-align: left;
+    font: 16px/24px Noto Sans HK;
+    letter-spacing: 0;
+    color: #000000;
+    opacity: 1;
+    margin-top: 0;
+    margin-bottom: 22px;
   }
 </style>
+{% include "component/result_cell.style.html" %}
 {% endblock body %}

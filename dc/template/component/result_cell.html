@@ -1,0 +1,36 @@
+{% import 'macro.j2' as macro %}
+<a class="cell">
+  <section class="cellContainer">
+    <h2 class="meetingName">
+      {{item["meeting_number"]}}
+    </h2>
+    <div class="metaInfoContainer">
+      <div class="metaInfo">
+        <p class="info">
+          {{ item["year"] }}
+        </p>
+      </div>
+      <div class="metaInfo">
+        <p class="info">
+          {{ macro.map_district(item["district"]) }}
+        </p>
+      </div>
+      <div class="metaInfo">
+        <p class="info">
+          {{ macro.map_meeting_type(item["meeting_type"]) }}
+        </p>
+      </div>
+    </div>
+    <div class="aggregratedInfoContainer">
+      <div class="aggregratedInfo agenda">
+        會議議程 ({{ item["count_by_document_type"].get("agenda", 0) }})
+      </div>
+      <div class="aggregratedInfo minutes">
+        會議記錄 ({{ item["count_by_document_type"].get("minutes", 0) }})
+      </div>
+      <div class="aggregratedInfo audio">
+        會議錄音 ({{ item["count_by_document_type"].get("audio", 0) }})
+      </div>
+    </div>
+  </section>
+</a>

@@ -1,0 +1,33 @@
+{% set DISTRICT_MAP = {
+    "tm": "屯門",
+    "yl": "元朗",
+    "island": "中西區",
+    "ytm": "油尖旺",
+    "south": "南區",
+    "kt": "觀塘",
+    "wts": "黃大仙",
+    "ssp": "深水埗",
+    "st": "沙田",
+    "tp": "大埔",
+    "tw": "tw",
+    "wc": "wc",
+    "east": "east",
+    "kc": "kc",
+    "north": "north",
+    "kwt": "kwt",
+    "sk": "sk",
+} %}
+
+{% set MEETING_TYPE_MAP = {
+    "full_council": "區議會大會",
+    "committee": "委員會",
+}
+%}
+
+{% macro map_district(label) -%}
+    {{ DISTRICT_MAP.get(label, "") }}
+{%- endmacro %}
+
+{% macro map_meeting_type(label) -%}
+    {{ MEETING_TYPE_MAP.get(label, "") }}
+{%- endmacro %}
